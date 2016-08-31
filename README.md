@@ -21,7 +21,7 @@ const APP_NAME = "Weather";
 const MY_API_KEY = "<YOUR_BUILD_API_KEY>";
 
 local build = BuildAPIAgent(MY_API_KEY);
-server.log("Running app code version " + build.getCurrentVersion(APP_NAME));
+server.log("Running app code version " + build.getLatestBuild(APP_NAME));
 ```
 
 ## Class Methods
