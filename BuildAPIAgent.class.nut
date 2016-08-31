@@ -28,42 +28,42 @@ class BuildAPIAgent {
     // *** PUBLIC FUNCTIONS ***
 
     function getDeviceName(deviceID = null, updateFlag = false) {
-    	if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
-    	    server.error("BuildAPI.getDeviceName() requires a device ID passed as a string");
+        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
+            server.error("BuildAPI.getDeviceName() requires a device ID passed as a string");
             return null;
         }
 
-    	local device = _getDeviceInfo(deviceID);
-    	if (device) return device.name;
-    	return null;
-	}
+        local device = _getDeviceInfo(deviceID);
+        if (device) return device.name;
+        return null;
+    }
 
-	function getModelName(deviceID = null) {
-	    if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
-    	    server.error("BuildAPI.getModelName() requires a device ID passed as a string");
+    function getModelName(deviceID = null) {
+        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
+            server.error("BuildAPI.getModelName() requires a device ID passed as a string");
             return null;
         }
 
         local models = _getModelsList();
-	    local myModel = null;
-	    foreach (model in models) {
-	        if ("devices" in model) {
-	            foreach (device in model.devices) {
-	                if (device == deviceID) {
-	                    myModel = model;
-	                    break;
-	                }
-	            }
-	        }
+        local myModel = null;
+        foreach (model in models) {
+            if ("devices" in model) {
+                foreach (device in model.devices) {
+                    if (device == deviceID) {
+                        myModel = model;
+                        break;
+                    }
+                }
+            }
 
-	        if (myModel) break;
-	    }
+            if (myModel) break;
+        }
 
-	    if (myModel) myModel = myModel.name;
-	    return myModel;
-	}
+        if (myModel) myModel = myModel.name;
+        return myModel;
+    }
 
-    function getCurrentVersion(modelName = null) {
+    function getLatestBuild(modelName = null) {
         if (modelName == null || typeof modelName != "string") {
             server.error("BuildAPI.getCurrentVersion() requires a model name passed as a string");
             return null;
@@ -78,34 +78,8 @@ class BuildAPIAgent {
                 if (!data) return null;
                 maxBuild = data.revisions.len();
                 foreach (rev in data.revisions) {
-                	local v = rev.version.tointeger();
-                	if (v > maxBuild) maxBuild = v;
-                }
-
-                break;
-            }
-        }
-
-        return maxBuild;
-    }
-
-    function getLatestVersion(modelID = null) {
-        if (modelID == null || typeof modelID != "string") {
-            server.error("BuildAPI.getCurrentVersion() requires a model ID passed as a string");
-            return null;
-        }
-
-        local maxBuild = null;
-        local models = _getModelsList();
-
-        foreach (model in models) {
-            if (model.id == modelID) {
-                local data = _getRevisions(modelID);
-            	if (!data) return null;
-            	maxBuild = data.revisions.len();
-            	foreach (rev in data.revisions) {
-                	local v = rev.version.tointeger();
-                	if (v > maxBuild) maxBuild = v;
+                    local v = rev.version.tointeger();
+                    if (v > maxBuild) maxBuild = v;
                 }
 
                 break;
@@ -118,20 +92,26 @@ class BuildAPIAgent {
     // **** PRIVATE FUNCTIONS - DO NOT CALL ****
 
     function _getDeviceInfo(devID) {
-    	local data = _sendGetRequest("devices/" + devID);
-    	if (data != null) return data.device;
-    	return null;
+        local data = _sendGetRequest("devices/" + devID);
+        if (data) return data.device;
+        return null;
     }
 
     function _getDevicesList() {
-    	local data = _sendGetRequest("devices");
-    	if (data != null) return data.devices;
-    	return null;
+        local data = _sendGetRequest("devices");
+        if (data) return data.devices;
+        return null;
+    }
+
+    function _getModelInfo(modID) {
+        local data = _sendGetRequest("models/" + modID);
+        if (data) return data.model;
+        return null;
     }
 
     function _getModelsList() {
         local data = _sendGetRequest("models");
-        if (data != null) return data.models;
+        if (data) return data.models;
         return null;
     }
 
