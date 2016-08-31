@@ -14,10 +14,16 @@ class BuildAPIAgent {
     _header = null;
 
     constructor(apiKey = null) {
-        // Constructor requires a Build API key
+        // Constructor requires a Build API key and must be on the agent
+        if (imp.environment != ENVIRONMENT_AGENT) {
+            // Trying to run the code on a device - No!
+            server.error("BuildAPIAgent cannot be instantiated on a device");
+            return null;
+        }
+
         if (apiKey == null) {
             // No API key? Report error and bail
-            server.error("BuildAPI class cannot be instantiated without an API key");
+            server.error("BuildAPIAgent cannot be instantiated without an API key");
             return null;
         } else {
             // Build the header for all future Build API requests
