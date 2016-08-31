@@ -15,7 +15,7 @@ class BuildAPIAgent {
 
     constructor(apiKey = null) {
         // Constructor requires a Build API key and must be on the agent
-        if (imp.environment != ENVIRONMENT_AGENT) {
+        if (imp.environment() != ENVIRONMENT_AGENT) {
             // Trying to run the code on a device - No!
             server.error("BuildAPIAgent cannot be instantiated on a device");
             return null;
