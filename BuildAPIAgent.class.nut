@@ -56,7 +56,7 @@ class BuildAPIAgent {
             if ("devices" in model) {
                 foreach (device in model.devices) {
                     if (device == deviceID) {
-                        myModel = model;
+                        myModel = model.name;
                         break;
                     }
                 }
@@ -65,7 +65,30 @@ class BuildAPIAgent {
             if (myModel) break;
         }
 
-        if (myModel) myModel = myModel.name;
+        return myModel;
+    }
+
+    function getModelID(deviceID = null) {
+        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
+            server.error("BuildAPIAgent.getModelID() requires a device ID passed as a string");
+            return null;
+        }
+
+        local models = _getModelsList();
+        local myModel = null;
+        foreach (model in models) {
+            if ("devices" in model) {
+                foreach (device in model.devices) {
+                    if (device == deviceID) {
+                        myModel = model.id;
+                        break;
+                    }
+                }
+            }
+
+            if (myModel) break;
+        }
+
         return myModel;
     }
 

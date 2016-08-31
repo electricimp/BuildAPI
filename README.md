@@ -52,6 +52,18 @@ server.log("This agent's model is called \"" + build.getModelName(imp.configpara
 // Logs 'This agent's model is called "WeatherMonitor"'
 ```
 
+### getModelID(*deviceID*)
+
+Use this method to discover the ID of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
+
+#### Example
+
+```
+server.log("This agent's model has ID: \"" + build.getModelID(imp.configparams.deviceid) + "\"");
+
+// Logs 'This agent's model has ID: "A3vEOo1hIHpy"'
+```
+
 ### getLatestBuildNumber(*modelName*)
 
 Use this method to determine the build number of the most recent version of your application code. Pass in the model’s name acquired using *getModelName()*. **Note** this may not be the version of the code your application is actually running &mdash; if you have saved code but not restarted your device(s), for example.
