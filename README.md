@@ -22,6 +22,8 @@ const MY_API_KEY = "<YOUR_BUILD_API_KEY>";
 
 local build = BuildAPIAgent(MY_API_KEY);
 server.log("Running app code version " + build.getLatestBuild(APP_NAME));
+
+// Logs 'Running app code version 557'
 ```
 
 ## Class Methods
@@ -34,6 +36,8 @@ Use this method to discover the name of a device from its ID. The ID of an agent
 
 ```
 server.log("This device is called \"" + build.getDeviceName(imp.configparams.deviceid) + "\"");
+
+// Logs 'This device is called "Buster"'
 ```
 
 ### getModelName(*deviceID*)
@@ -44,6 +48,8 @@ Use this method to discover the name of the model that the agent and device are 
 
 ```
 server.log("This agent's model is called \"" + build.getModelName(imp.configparams.deviceid) + "\"");
+
+// Logs 'This agent's model is called "WeatherMonitor"'
 ```
 
 ### getLatestBuild(*modelName*)
@@ -54,5 +60,11 @@ Use this method to determine the build number of the most recent version of your
 
 ```
 local modelName = build.getDeviceName(imp.configparams.deviceid);
-server.log("This device is called \"" + build.getLatestBuild(modelName) + "\"");
+server.log("Running app code version " + build.getLatestBuild(modelName));
+
+// Logs 'Running app code version 557'
 ```
+
+## License
+
+BuildAPIAgent is released under the [MIT License](https://github.com/electricimp/BuildAPIAgent/blob/master/LICENSE).
