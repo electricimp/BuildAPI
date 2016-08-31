@@ -29,7 +29,7 @@ class BuildAPIAgent {
 
     function getDeviceName(deviceID = null, updateFlag = false) {
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
-            server.error("BuildAPI.getDeviceName() requires a device ID passed as a string");
+            server.error("BuildAPIAgent.getDeviceName() requires a device ID passed as a string");
             return null;
         }
 
@@ -40,7 +40,7 @@ class BuildAPIAgent {
 
     function getModelName(deviceID = null) {
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
-            server.error("BuildAPI.getModelName() requires a device ID passed as a string");
+            server.error("BuildAPIAgent.getModelName() requires a device ID passed as a string");
             return null;
         }
 
@@ -65,7 +65,7 @@ class BuildAPIAgent {
 
     function getLatestBuild(modelName = null) {
         if (modelName == null || typeof modelName != "string") {
-            server.error("BuildAPI.getCurrentVersion() requires a model name passed as a string");
+            server.error("BuildAPIAgent.getLatestBuild() requires a model name passed as a string");
             return null;
         }
 
