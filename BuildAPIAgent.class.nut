@@ -8,7 +8,7 @@ class BuildAPIAgent {
 
     // Constants
     static BASE_URL = "https://build.electricimp.com/v4/";
-    static version = [1,0,2];
+    static version = [1,0,0];
 
     // Private properties
     _header = null;
