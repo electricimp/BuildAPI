@@ -69,7 +69,7 @@ class BuildAPIAgent {
         return myModel;
     }
 
-    function getLatestBuild(modelName = null) {
+    function getLatestBuildNumber(modelName = null) {
         if (modelName == null || typeof modelName != "string") {
             server.error("BuildAPIAgent.getLatestBuild() requires a model name passed as a string");
             return null;

@@ -21,7 +21,7 @@ const APP_NAME = "Weather";
 const MY_API_KEY = "<YOUR_BUILD_API_KEY>";
 
 local build = BuildAPIAgent(MY_API_KEY);
-server.log("Running app code version " + build.getLatestBuild(APP_NAME));
+server.log("Running app code version " + build.getLatestBuildNumber(APP_NAME));
 
 // Logs 'Running app code version 557'
 ```
@@ -52,15 +52,15 @@ server.log("This agent's model is called \"" + build.getModelName(imp.configpara
 // Logs 'This agent's model is called "WeatherMonitor"'
 ```
 
-### getLatestBuild(*modelName*)
+### getLatestBuildNumber(*modelName*)
 
-Use this method to determine the build number of the most recent version of your application code. Pass in the model’s name acquired using *getModelName()*. **Note** this may not be the version of the code your application is actually running.
+Use this method to determine the build number of the most recent version of your application code. Pass in the model’s name acquired using *getModelName()*. **Note** this may not be the version of the code your application is actually running &mdash; if you have saved code but not restarted your device(s), for example.
 
 #### Example
 
 ```
 local modelName = build.getDeviceName(imp.configparams.deviceid);
-server.log("Running app code version " + build.getLatestBuild(modelName));
+server.log("Running app code version " + build.getLatestBuildNumber(modelName));
 
 // Logs 'Running app code version 557'
 ```
