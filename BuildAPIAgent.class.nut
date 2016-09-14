@@ -41,7 +41,7 @@ class BuildAPIAgent {
     function getDeviceName(deviceID = imp.configparams.deviceid) {
        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
            local error = "BuildAPIAgent.getDeviceName() requires a device ID passed as a string"
-           server.error(error);
+           //server.error(error);
            return Promise.reject(error);
        }
 
@@ -54,7 +54,7 @@ class BuildAPIAgent {
    function getModelName(deviceID = imp.configparams.deviceid) {
        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
            local error = "BuildAPIAgent.getModelName() requires a device ID passed as a string"
-           server.error(error);
+           //server.error(error);
            return Promise.reject(error);
        }
 
@@ -69,7 +69,7 @@ class BuildAPIAgent {
                                 }
                             }
                         }
-                        return Promise.reject("deviceID " + deviceID + " not found in any models from Build API")
+                        throw "deviceID " + deviceID + " not found in any models for the provided Build API Key"
                     }.bindenv(this))
 
    }
@@ -77,7 +77,7 @@ class BuildAPIAgent {
    function getModelID(deviceID = imp.configparams.deviceid) {
        if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
            local error = "BuildAPIAgent.getModelID() requires a device ID passed as a string"
-           server.error(error);
+           //server.error(error);
            return Promise.reject(error);
        }
 
@@ -92,7 +92,7 @@ class BuildAPIAgent {
                                 }
                             }
                         }
-                        return Promise.reject("deviceID " + deviceID + " not found in any models from Build API")
+                        throw "deviceID " + deviceID + " not found in any models for the provided Build API Key"
                     }.bindenv(this))
 
    }
@@ -101,7 +101,7 @@ class BuildAPIAgent {
     function getLatestBuildNumber(modelName = null) {
         if (modelName == null || (typeof modelName != "string")) {
             local error = "BuildAPI.getLatestBuildNumber() requires a model name passed as a string"
-            server.error(error);
+            //server.error(error);
             return Promise.reject(error);
         }
 
@@ -122,8 +122,8 @@ class BuildAPIAgent {
                         return maxBuild
                     }.bindenv(this))
                     .fail(function(error){
-                        server.error("BuildAPI.getLatestBuildNumber failed - " + http.jsonenecode(error))
-                        return Promise.reject(error)
+                        //server.error("BuildAPI.getLatestBuildNumber failed - " + http.jsonenecode(error))
+                        throw error
                     }.bindenv(this))
     }
 
@@ -160,13 +160,15 @@ class BuildAPIAgent {
                 if (result.statuscode == 200) {
                     fulfill(http.jsondecode(result.body));
                 } else {
+                    local error
                     if (result.statuscode == 401) {
-                        server.error("Build API Error: " + result.statuscode + " - Unrecognised API key");
+                        error = "Build API Error: " + result.statuscode + " - Unrecognised API key"
                     } else {
-                        // TODO Handlers for common errors
-                        server.error("Build API Error: " + result.statuscode + " - " + result.body);
+                        //TODO: Handlers for common errors
+                        error = "Build API Error: " + http.jsonencode(result)
                     }
-                    reject(result);
+                    //server.error(error);
+                    reject(error);
                 }
             }.bindenv(this));
         }.bindenv(this))
