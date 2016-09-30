@@ -2,9 +2,19 @@
 
 A very simple integration of the Electric Imp Build API.
 
-This class provides basic interaction with [Electric Imp’s Build API](https://electricimp.com/docs/buildapi/) in order to provide agent code with extra information that is not available through the [imp API](https://electricimp.com/docs/api/). Since this information is typically accessed once during an application’s runtime, *BuildAPIAgent* operates synchronously, so requests for information such as the name of the model will block your application code until the data is returned.
+This class provides basic interaction with [Electric Imp’s Build API](https://electricimp.com/docs/buildapi/) in order to provide agent code with extra information that is not available through the [imp API](https://electricimp.com/docs/api/). Since this information is typically accessed only once during an application’s runtime, *BuildAPIAgent* operates synchronously, so requests for information such as the name of the model will block your application code until the data is returned.
 
 **To add this library to your project, add** `#require "BuildAPIAgent.class.nut:1.0.0"` **to the top of your agent code**
+
+## Release Notes
+
+### 1.0.1
+
+- Remove unneeded extra parameter from *getDeviceName()*
+
+### 1.0.0
+
+- Initial release
 
 ## Class Usage
 
