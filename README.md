@@ -4,7 +4,7 @@ A very simple integration of the Electric Imp Build API.
 
 This class provides basic interaction with [Electric Imp’s Build API](https://electricimp.com/docs/buildapi/) in order to provide agent code with extra information that is not available through the [imp API](https://electricimp.com/docs/api/). Since this information is typically accessed only once during an application’s runtime, *BuildAPIAgent* operates synchronously, so requests for information such as the name of the model will block your application code until the data is returned.
 
-**To add this library to your project, add** `#require "BuildAPIAgent.class.nut:1.0.0"` **to the top of your agent code**
+**To add this library to your project, add** `#require "BuildAPIAgent.class.nut:1.0.1"` **to the top of your agent code**
 
 ## Release Notes
 
@@ -20,12 +20,12 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 
 ### Constructor: BuildAPIAgent(*apiKey*)
 
-The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the [Electric Imp IDE](https://ide.electricimp.com/login). More information on acquiring keys can be found [here](https://electricimp.com/docs/resources/ideuserguide/#2-1-2).
+The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the [Electric Imp IDE](https://ide.electricimp.com/login). More information on acquiring keys can be found [here](https://electricimp.com/docs/ideuserguide/account/#10-2).
 
 #### Example
 
 ```squirrel
-#require "BuildAPIAgent.class.nut:1.0.0"
+#require "BuildAPIAgent.class.nut:1.0.1"
 
 const APP_NAME = "Weather";
 const MY_API_KEY = "<YOUR_BUILD_API_KEY>";
