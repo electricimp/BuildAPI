@@ -8,7 +8,7 @@ class BuildAPIAgent {
 
     // Constants
     static BASE_URL = "https://build.electricimp.com/v4/";
-    static version = [1,0,0];
+    static version = [1,0,1];
 
     // Private properties
     _header = null;
@@ -33,7 +33,7 @@ class BuildAPIAgent {
 
     // *** PUBLIC FUNCTIONS ***
 
-    function getDeviceName(deviceID = null, updateFlag = false) {
+    function getDeviceName(deviceID = null) {
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getDeviceName() requires a device ID passed as a string");
             return null;
@@ -118,7 +118,7 @@ class BuildAPIAgent {
         return maxBuild;
     }
 
-    // **** PRIVATE FUNCTIONS - DO NOT CALL ****
+    // ******** PRIVATE FUNCTIONS - DO NOT CALL ********
 
     function _getDeviceInfo(devID) {
         local data = _sendGetRequest("devices/" + devID);
