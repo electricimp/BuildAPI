@@ -10,7 +10,7 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 
 ### 1.1.0
 
-- Added asynchronous operation to all public methods. Each method now takes an optional callback function which itself has two parameters: *err* and *data*. The former contains an error message, but is only present if there has been an error. The second parameter, *data*, contains the expected result. For example, if you are requesting a device name, *data* will be a string. If you are requesting a build number, *data* will be an integer.
+- Added asynchronous operation to all public methods. Each method now takes an optional callback function which itself has two parameters: *err* and *data*. The former contains an error message, but is only non-null if there has been an error. The second parameter, *data*, contains the expected result. For example, if you are requesting a device name, *data* will be a string. If you are requesting a build number, *data* will be an integer.
 
 ### 1.0.1
 
