@@ -34,6 +34,7 @@ class BuildAPIAgent {
     // *** PUBLIC FUNCTIONS ***
 
     function getDeviceName(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getDeviceName() requires a device ID passed as a string");
             return null;
@@ -48,7 +49,7 @@ class BuildAPIAgent {
                 }
             }.bindenv(this));
         } else {
-            local device = _getDeviceInfo(deviceID, callback);
+            local device = _getDeviceInfo(deviceID, null);
             if (device) return device.name;
         }
 
@@ -56,6 +57,7 @@ class BuildAPIAgent {
     }
 
     function getModelName(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getModelName() requires a device ID passed as a string");
             return null;
@@ -80,6 +82,7 @@ class BuildAPIAgent {
     }
 
     function getModelID(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getModelID() requires a device ID passed as a string");
             return null;
@@ -105,6 +108,7 @@ class BuildAPIAgent {
     }
 
     function getLatestBuildNumber(modelName = null, callback = null) {
+        // Make sure we have a valid modelName string
         if (modelName == null || typeof modelName != "string") {
             server.error("BuildAPIAgent.getLatestBuild() requires a model name passed as a string");
             return null;
@@ -161,6 +165,10 @@ class BuildAPIAgent {
 
     // ******** PRIVATE FUNCTIONS - DO NOT CALL ********
 
+    // In the following functions, if 'cb' (callback) is not null, the callback is triggered
+    // by _sendGetRequest() (to which the callback is relayed) and the function returns null
+    // (as does the calling function). If 'cb' is null, the data is retrieved synchronously
+
     function _getDeviceInfo(devID, cb) {
         local data = _sendGetRequest("devices/" + devID, cb);
         if (data) return data.device;
@@ -190,8 +198,11 @@ class BuildAPIAgent {
     }
 
     function _sendGetRequest(url, cb) {
-        // Issues a GET request based on the passed URL using stock header
+        // Issues a GET request based on the passed URL using account-specific header
+        // If a callback is passed in (to 'cb'), it will be called to return the data,
+        // else the data is retrieved synchronously and returned back up the call chain
         local query = http.get(BASE_URL + url, _header);
+
         if (cb) {
             query.sendasync(function(result) {
                 if (result.statuscode == 200) {
