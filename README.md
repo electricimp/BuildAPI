@@ -24,7 +24,7 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 
 ### Constructor: BuildAPIAgent(*apiKey*)
 
-The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the [Electric Imp IDE](https://ide.electricimp.com/login). More information on acquiring keys can be found [here](https://electricimp.com/docs/resources/ideuserguide/#2-1-2).
+The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the [Electric Imp IDE](https://ide.electricimp.com/login). More information on acquiring keys can be found [here](https://electricimp.com/docs/ideuserguide/account/#10-2).
 
 #### Example
 
