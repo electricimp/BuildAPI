@@ -8,7 +8,7 @@ class BuildAPIAgent {
 
     // Constants
     static BASE_URL = "https://build.electricimp.com/v4/";
-    static version = [1,0,1];
+    static version = [1,1,0];
 
     // Private properties
     _header = null;
@@ -23,7 +23,7 @@ class BuildAPIAgent {
 
         if (apiKey == null) {
             // No API key? Report error and bail
-            server.error("BuildAPIAgent cannot be instantiated without an API key");
+            server.error("BuildAPIAgent cannot be instantiated without a Build API key");
             return null;
         } else {
             // Build the header for all future Build API requests
@@ -33,135 +33,298 @@ class BuildAPIAgent {
 
     // *** PUBLIC FUNCTIONS ***
 
-    function getDeviceName(deviceID = null) {
+    function getDeviceName(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getDeviceName() requires a device ID passed as a string");
             return null;
         }
 
-        local device = _getDeviceInfo(deviceID);
-        if (device) return device.name;
-        return null;
+        if (callback) {
+            _getDeviceInfo(deviceID, function(err, data) {
+                if (err) {
+                    callback(err, null);
+                } else {
+                    callback(null, data.device.name);
+                }
+            }.bindenv(this));
+        } else {
+            local device = _getDeviceInfo(deviceID, null);
+            if (device) return device.name;
+        }
+
+       return null;
     }
 
-    function getModelName(deviceID = null) {
+    function getModelName(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getModelName() requires a device ID passed as a string");
             return null;
         }
 
-        local models = _getModelsList();
-        local myModel = null;
-        foreach (model in models) {
-            if ("devices" in model) {
-                foreach (device in model.devices) {
-                    if (device == deviceID) {
-                        myModel = model.name;
-                        break;
+        if (callback) {
+            _getModelsList(function(err, data) {
+                if (err) {
+                    callback (err, null);
+                } else {
+                    local myModel = _findModel(data.models, deviceID, "name");
+                    if (myModel) {
+                        callback(null, myModel);
+                    } else {
+                        callback(("No model name for that device ID " + deviceID), null);
                     }
                 }
-            }
-
-            if (myModel) break;
+            }.bindenv(this));
+        } else {
+            return _findModel(_getModelsList(null), deviceID, "name");
         }
-
-        return myModel;
     }
 
-    function getModelID(deviceID = null) {
+    function getModelID(deviceID = null, callback = null) {
+        // Make sure we have a valid deviceID string
         if (deviceID == null || deviceID == "" || typeof deviceID != "string") {
             server.error("BuildAPIAgent.getModelID() requires a device ID passed as a string");
             return null;
         }
 
-        local models = _getModelsList();
-        local myModel = null;
-        foreach (model in models) {
-            if ("devices" in model) {
-                foreach (device in model.devices) {
-                    if (device == deviceID) {
-                        myModel = model.id;
-                        break;
-                    }
+        if (callback) {
+            _getModelsList(function(err, data) {
+                if (err) {
+                    callback (err, null);
+                    return;
                 }
-            }
 
-            if (myModel) break;
+                local myModel = _findModel(data.models, deviceID, "id");
+                if (myModel) {
+                    callback(null, myModel);
+                } else {
+                    callback(("No model ID for that device ID " + deviceID), null);
+                }
+            }.bindenv(this));
+        } else {
+            return _findModel(_getModelsList(null), deviceID, "id");
         }
-
-        return myModel;
     }
 
-    function getLatestBuildNumber(modelName = null) {
+    function getLatestBuildNumber(modelName = null, callback = null) {
+        // Make sure we have a valid modelName string
         if (modelName == null || typeof modelName != "string") {
             server.error("BuildAPIAgent.getLatestBuild() requires a model name passed as a string");
             return null;
         }
 
         local maxBuild = null;
-        local models = _getModelsList();
 
-        foreach (model in models) {
-            if (model.name == modelName) {
-                local data = _getRevisions(model.id);
-                if (!data) return null;
-                maxBuild = data.revisions.len();
-                foreach (rev in data.revisions) {
-                    local v = rev.version.tointeger();
-                    if (v > maxBuild) maxBuild = v;
+        if (callback) {
+            _getModelsList(function(err, data) {
+                if (err) {
+                    callback (err, null);
+                    return;
                 }
 
-                break;
+                foreach (model in data.models) {
+                    if (model.name == modelName) {
+                        _getRevisions(model.id, function(err, data) {
+                            if (err) {
+                                callback(err, null);
+                                return;
+                            }
+
+                            maxBuild = data.revisions.len();
+                            foreach (rev in data.revisions) {
+                                local v = rev.version.tointeger();
+                                if (v > maxBuild) maxBuild = v;
+                            }
+                            callback(null, maxBuild);
+                        }.bindenv(this));
+                        break;
+                    }
+                }
+            }.bindenv(this));
+        } else {
+            local models = _getModelsList(null);
+            local maxBuild = null;
+            foreach (model in models) {
+                if (model.name == modelName) {
+                    local data = _getRevisions(model.id);
+                    if (!data) return null;
+                    maxBuild = data.revisions.len();
+                    foreach (rev in data.revisions) {
+                        local v = rev.version.tointeger();
+                        if (v > maxBuild) maxBuild = v;
+                    }
+
+                    break;
+                }
             }
         }
 
         return maxBuild;
     }
 
+    function getAgentList(modelName = null, callback = null) {
+        // Make sure we have a valid modelName string
+        if (modelName == null || typeof modelName != "string") {
+            server.error("BuildAPIAgent.getAgentList() requires a model name passed as a string");
+            return null;
+        }
+
+        if (callback) {
+            _getModelsList(function(err, data) {
+                if (err) {
+                    callback (err, null);
+                    return;
+                }
+
+                foreach (model in data.models) {
+                    if (model.name == modelName) {
+                        _getModelDevices(model.id, function(err, data) {
+                            if (err) {
+                                callback(err, null);
+                                return;
+                            }
+
+                            local devices = data.model.devices;
+                            if (devices.len() == 0) {
+                                callback("There are no devices running model \"" + modelName + "\"", null);
+                                return;
+                            }
+
+                            _getDevicesList(function(err, data) {
+                                if (err) {
+                                    callback(err, null);
+                                    return;
+                                }
+
+                                local allDevices = data.devices;
+                                local agentIDs = [];
+                                foreach (device in devices) {
+                                    foreach (aDevice in allDevices) {
+                                        if (device == aDevice.id) {
+                                            agentIDs.append(aDevice.agent_id);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                callback(null, agentIDs);
+                            }.bindenv(this));
+                        }.bindenv(this));
+                        break;
+                    }
+                }
+            }.bindenv(this));
+        } else {
+            local models = _getModelsList(null);
+            local agentIDs = [];
+            foreach (model in models) {
+                if (model.name == modelName) {
+                    local devices = _getModelDevices(model.id, null);
+                    if (devices.len() == 0) return agentIDs;
+                    local allDevices = _getDevicesList(null);
+                    foreach (device in devices) {
+                        foreach (aDevice in allDevices) {
+                            if (device == aDevice.id) {
+                                agentIDs.append(aDevice.agent_id);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return agentIDs;
+        }
+    }
+
     // ******** PRIVATE FUNCTIONS - DO NOT CALL ********
 
-    function _getDeviceInfo(devID) {
-        local data = _sendGetRequest("devices/" + devID);
+    // In the following functions, if 'cb' (callback) is not null, the callback is triggered
+    // by _sendGetRequest() (to which the callback is relayed) and the function returns null
+    // (as does the calling function). If 'cb' is null, the data is retrieved synchronously
+
+    function _getDeviceInfo(devID, cb) {
+        local data = _sendGetRequest("devices/" + devID, cb);
         if (data) return data.device;
         return null;
     }
 
-    function _getDevicesList() {
-        local data = _sendGetRequest("devices");
+    function _getDevicesList(cb) {
+        local data = _sendGetRequest("devices", cb);
         if (data) return data.devices;
         return null;
     }
 
-    function _getModelInfo(modID) {
-        local data = _sendGetRequest("models/" + modID);
+    function _getModelInfo(modID, cb) {
+        local data = _sendGetRequest("models/" + modID, cb);
         if (data) return data.model;
         return null;
     }
 
-    function _getModelsList() {
-        local data = _sendGetRequest("models");
+    function _getModelsList(cb) {
+        local data = _sendGetRequest("models", cb);
         if (data) return data.models;
         return null;
     }
 
-    function _getRevisions(modelID) {
-        return _sendGetRequest("models/" + modelID + "/revisions");
+    function _getModelDevices(modID, cb) {
+        local data = _sendGetRequest("models/" + modID, cb);
+        if (data) return data.model.devices;
+        return null;
     }
 
-    function _sendGetRequest(url) {
-        // Issues a GET request based on the passed URL using stock header
-        local result = http.get(BASE_URL + url, _header).sendsync();
-        if (result.statuscode == 200) {
-            return http.jsondecode(result.body);
+    function _getRevisions(modelID, cb) {
+        return _sendGetRequest("models/" + modelID + "/revisions", cb);
+    }
+
+    function _sendGetRequest(url, cb) {
+        // Issues a GET request based on the passed URL using account-specific header
+        // If a callback is passed in (to 'cb'), it will be called to return the data,
+        // else the data is retrieved synchronously and returned back up the call chain
+        local query = http.get(BASE_URL + url, _header);
+
+        if (cb) {
+            query.sendasync(function(result) {
+                if (result.statuscode == 200) {
+                    cb(null, http.jsondecode(result.body));
+                } else {
+                    local err = (result.statuscode == 401) ? ("Build API Error: " + result.statuscode + " - Unrecognised API key") : ("Build API Error: " + result.statuscode + " - " + result.body);
+                    cb(err, null);
+                }
+            }.bindenv(this));
         } else {
-            if (result.statuscode == 401) {
-                server.error("Build API Error: " + result.statuscode + " - Unrecognised API key");
+            local result = query.sendsync();
+
+            if (result.statuscode == 200) {
+                return http.jsondecode(result.body);
             } else {
-                // TODO Handlers for common errors
-                server.error("Build API Error: " + result.statuscode + " - " + result.body);
+                if (result.statuscode == 401) {
+                    server.error("Build API Error: " + result.statuscode + " - Unrecognised API key");
+                } else {
+                    server.error("Build API Error: " + result.statuscode + " - " + result.body);
+                }
+
+                return null;
+            }
+        }
+    }
+
+    function _findModel(models, devID, key) {
+        local myModel = null;
+        foreach (model in models) {
+            if ("devices" in model) {
+                foreach (device in model.devices) {
+                    if (device == devID) {
+                        myModel = model[key];
+                        break;
+                    }
+                }
             }
 
-            return null;
+            if (myModel) break;
         }
+
+        return myModel;
     }
 }
