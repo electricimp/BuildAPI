@@ -163,6 +163,81 @@ class BuildAPIAgent {
         return maxBuild;
     }
 
+    function getAgentList(modelName = null, callback = null) {
+        // Make sure we have a valid modelName string
+        if (modelName == null || typeof modelName != "string") {
+            server.error("BuildAPIAgent.getAgentList() requires a model name passed as a string");
+            return null;
+        }
+
+        if (callback) {
+            _getModelsList(function(err, data) {
+                if (err) {
+                    callback (err, null);
+                    return;
+                }
+
+                foreach (model in data.models) {
+                    if (model.name == modelName) {
+                        _getModelDevices(model.id, function(err, data) {
+                            if (err) {
+                                callback(err, null);
+                                return;
+                            }
+
+                            local devices = data.model.devices;
+                            if (devices.len() == 0) {
+                                callback("There are no devices running model \"" + modelName + "\"", null);
+                                return;
+                            }
+
+                            _getDevicesList(function(err, data) {
+                                if (err) {
+                                    callback(err, null);
+                                    return;
+                                }
+
+                                local allDevices = data.devices;
+                                local agentIDs = [];
+                                foreach (device in devices) {
+                                    foreach (aDevice in allDevices) {
+                                        if (device == aDevice.id) {
+                                            agentIDs.append(aDevice.agent_id);
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                callback(null, agentIDs);
+                            }.bindenv(this));
+                        }.bindenv(this));
+                        break;
+                    }
+                }
+            }.bindenv(this));
+        } else {
+            local models = _getModelsList(null);
+            local agentIDs = [];
+            foreach (model in models) {
+                if (model.name == modelName) {
+                    local devices = _getModelDevices(model.id, null);
+                    if (devices.len() == 0) return agentIDs;
+                    local allDevices = _getDevicesList(null);
+                    foreach (device in devices) {
+                        foreach (aDevice in allDevices) {
+                            if (device == aDevice.id) {
+                                agentIDs.append(aDevice.agent_id);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return agentIDs;
+        }
+    }
+
     // ******** PRIVATE FUNCTIONS - DO NOT CALL ********
 
     // In the following functions, if 'cb' (callback) is not null, the callback is triggered
@@ -175,8 +250,8 @@ class BuildAPIAgent {
         return null;
     }
 
-    function _getDevicesList() {
-        local data = _sendGetRequest("devices");
+    function _getDevicesList(cb) {
+        local data = _sendGetRequest("devices", cb);
         if (data) return data.devices;
         return null;
     }
@@ -190,6 +265,12 @@ class BuildAPIAgent {
     function _getModelsList(cb) {
         local data = _sendGetRequest("models", cb);
         if (data) return data.models;
+        return null;
+    }
+
+    function _getModelDevices(modID, cb) {
+        local data = _sendGetRequest("models/" + modID, cb);
+        if (data) return data.model.devices;
         return null;
     }
 

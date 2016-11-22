@@ -11,6 +11,7 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 ### 1.1.0
 
 - Added asynchronous operation to all public methods. Each method now takes an optional callback function which itself has two parameters: *err* and *data*. The former contains an error message, but is only non-null if there has been an error. The second parameter, *data*, contains the expected result. For example, if you are requesting a device name, *data* will be a string. If you are requesting a build number, *data* will be an integer.
+- Added *getAgentList()* method
 
 ### 1.0.1
 
@@ -89,6 +90,35 @@ local modelName = build.getDeviceName(imp.configparams.deviceid);
 server.log("Running app code version " + build.getLatestBuildNumber(modelName));
 
 // Logs 'Running app code version 557'
+```
+
+### getAgentList(*modelName[, callback]*)
+
+Use this method to gain the agent IDs, ie. the agent URLs, of all of the devices running the model specified by *modelName*, which you can obtain with *getModelName()*. The list is returned as an array of agent ID strings.
+
+**Important** The Build API currently works only with development devices, but when it is extended to production devices, the list of agent IDs may be very large and larger than available agent memory.
+
+#### Example
+
+```
+build.getModelName(imp.configparams.deviceid, function(err, data) {
+    if (err) {
+        server.error(err);
+    } else {
+        build.getAgentList(data, function(err, data) {
+            if (err) {
+                server.error(err);
+            } else {
+                if (data.len() > 0) {
+                    server.log("Agent URLs:");
+                    foreach (anAgentID in data) {
+                        server.log("https://agent.electricimp.com/" + anAgentID);
+                    }
+                }
+            }
+        });
+    }
+});
 ```
 
 ## License
