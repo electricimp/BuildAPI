@@ -47,12 +47,24 @@ server.log("Running app code version " + build.getLatestBuildNumber(APP_NAME));
 
 Use this method to discover the name of a device from its ID. The ID of an agent’s associated device is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
 
-#### Example
+#### Examples
 
 ```
 server.log("This device is called \"" + build.getDeviceName(imp.configparams.deviceid) + "\"");
 
 // Logs 'This device is called "Buster"'
+```
+
+```
+build.getDeviceName(imp.configparams.deviceid, function(err, data) {
+    if (err) {
+        server.error(err);
+    } else {
+        server.log("Device name: " + data);
+    }
+});
+
+// Logs 'Device name: Buster'
 ```
 
 ### getModelName(*deviceID[, callback]*)
@@ -71,12 +83,24 @@ server.log("This agent's model is called \"" + build.getModelName(imp.configpara
 
 Use this method to discover the ID of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
 
-#### Example
+#### Examples
 
 ```
 server.log("This agent's model has ID: \"" + build.getModelID(imp.configparams.deviceid) + "\"");
 
 // Logs 'This agent's model has ID: "A3vEOo1hIHpy"'
+```
+
+```
+build.getModelID(imp.configparams.deviceid, function(err, data) {
+    if (err) {
+        server.error(err);
+    } else {
+        server.log("Model ID: " + data);
+    }
+});
+
+// Logs 'Model ID: A3vEOo1hIHpy'
 ```
 
 ### getLatestBuildNumber(*modelName[, callback]*)
