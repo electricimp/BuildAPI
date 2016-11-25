@@ -8,6 +8,10 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 
 ## Release Notes
 
+### 1.1.1
+
+- Fix bug causing 'wrong number of parameters' in getLatestBuildNumber().
+
 ### 1.1.0
 
 - Added asynchronous operation to all public methods. Each method now takes an optional callback function which itself has two parameters: *err* and *data*. The former contains an error message, but is only non-null if there has been an error. The second parameter, *data*, contains the expected result. For example, if you are requesting a device name, *data* will be a string. If you are requesting a build number, *data* will be an integer.
@@ -30,7 +34,7 @@ The constructor takes a single, mandatory parameter: a Build API Key associated 
 #### Example
 
 ```squirrel
-#require "BuildAPIAgent.class.nut:1.1.0"
+#require "BuildAPIAgent.class.nut:1.1.1"
 
 const APP_NAME = "Weather";
 const MY_API_KEY = "<YOUR_BUILD_API_KEY>";
