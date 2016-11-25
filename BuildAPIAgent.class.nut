@@ -8,7 +8,7 @@ class BuildAPIAgent {
 
     // Constants
     static BASE_URL = "https://build.electricimp.com/v4/";
-    static version = [1,1,0];
+    static version = [1,1,1];
 
     // Private properties
     _header = null;
@@ -144,13 +144,12 @@ class BuildAPIAgent {
             }.bindenv(this));
         } else {
             local models = _getModelsList(null);
-            local maxBuild = null;
             foreach (model in models) {
                 if (model.name == modelName) {
-                    local data = _getRevisions(model.id);
+                    local data = _getRevisions(model.id, null);
                     if (!data) return null;
-                    maxBuild = data.revisions.len();
-                    foreach (rev in data.revisions) {
+                    maxBuild = data.len();
+                    foreach (rev in data) {
                         local v = rev.version.tointeger();
                         if (v > maxBuild) maxBuild = v;
                     }
@@ -274,8 +273,10 @@ class BuildAPIAgent {
         return null;
     }
 
-    function _getRevisions(modelID, cb) {
-        return _sendGetRequest("models/" + modelID + "/revisions", cb);
+    function _getRevisions(modID, cb) {
+        local data = _sendGetRequest("models/" + modID + "/revisions", cb);
+        if (data) return data.revisions;
+        return null;
     }
 
     function _sendGetRequest(url, cb) {
