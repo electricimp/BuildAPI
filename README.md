@@ -1,8 +1,10 @@
 # BuildAPIAgent
 
+**The Build API is now deprecated and will shortly be removed from service. Please do not use this library**
+
 A very simple integration of the Electric Imp Build API.
 
-This class provides basic interaction with [Electric Imp’s Build API](https://electricimp.com/docs/buildapi/) in order to provide agent code with extra information that is not available through the [imp API](https://electricimp.com/docs/api/). Since this information is typically accessed only once during an application’s runtime, *BuildAPIAgent* operates synchronously, so requests for information such as the name of the model will block your application code until the data is returned.
+This class provides basic interaction with Electric Imp’s Build API in order to provide agent code with extra information that is not available through the [imp API](https://developer.electricimp.com/api). Since this information is typically accessed only once during an application’s runtime, *BuildAPIAgent* operates synchronously, so requests for information such as the name of the model will block your application code until the data is returned.
 
 **To add this library to your project, add** `#require "BuildAPIAgent.class.nut:1.1.1"` **to the top of your agent code**
 
@@ -29,7 +31,7 @@ This class provides basic interaction with [Electric Imp’s Build API](https://
 
 ### Constructor: BuildAPIAgent(*apiKey*)
 
-The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the [Electric Imp IDE](https://ide.electricimp.com/login). More information on acquiring keys can be found [here](https://electricimp.com/docs/ideuserguide/account/#10-2).
+The constructor takes a single, mandatory parameter: a Build API Key associated with your account. You can generate Build API keys by logging in to the Electric Imp IDE.
 
 #### Example
 
@@ -49,7 +51,7 @@ server.log("Running app code version " + build.getLatestBuildNumber(APP_NAME));
 
 ### getDeviceName(*deviceID[, callback]*)
 
-Use this method to discover the name of a device from its ID. The ID of an agent’s associated device is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
+Use this method to discover the name of a device from its ID. The ID of an agent’s associated device is the value of [imp.configparams.deviceid](https://developer.electricimp.com/api/imp/configparams).
 
 #### Examples
 
@@ -73,7 +75,7 @@ build.getDeviceName(imp.configparams.deviceid, function(err, data) {
 
 ### getModelName(*deviceID[, callback]*)
 
-Use this method to discover the name of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
+Use this method to discover the name of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://developer.electricimp.com/api/imp/configparams).
 
 #### Example
 
@@ -85,7 +87,7 @@ server.log("This agent's model is called \"" + build.getModelName(imp.configpara
 
 ### getModelID(*deviceID[, callback]*)
 
-Use this method to discover the ID of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://electricimp.com/docs/api/imp/configparams/).
+Use this method to discover the ID of the model that the agent and device are running. Pass in the device’s ID, which is the value of [imp.configparams.deviceid](https://developer.electricimp.com/api/imp/configparams).
 
 #### Examples
 
