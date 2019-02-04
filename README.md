@@ -1,4 +1,4 @@
-| :warning: The Electric Imp’s Build API is not supported anymore. Please use [impCentral API](https://apidoc.electricimp.com) and [impCentral Environment Variables](https://developer.electricimp.com/tools/impcentral/environmentvariables) instead. |
+| :warning: The Electric Imp’s Build API is not supported anymore. Please use [impCentral API](https://apidoc.electricimp.com) and impCentral Environment [Variables](https://developer.electricimp.com/tools/impcentral/environmentvariables) instead. |
 | --- |
 
 
