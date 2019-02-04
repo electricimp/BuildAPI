@@ -1,3 +1,7 @@
+| :warning: The Electric Imp’s Build API is not supported anymore. Please use [impCentral API](https://apidoc.electricimp.com) and [impCentral Environment Variables](https://developer.electricimp.com/tools/impcentral/environmentvariables) instead. |
+| --- |
+
+
 # BuildAPIAgent
 
 **The Build API is now deprecated and will shortly be removed from service. Please do not use this library**
